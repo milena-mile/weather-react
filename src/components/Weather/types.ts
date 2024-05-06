@@ -30,4 +30,4 @@ interface WeatherItemProps {
     image: string
 }
 
-export type {NetworkState, WeatherData, WeatherItemProps};
+export type {NetworkState, NetworkSuccessState, WeatherData, WeatherItemProps};

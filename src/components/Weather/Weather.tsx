@@ -1,6 +1,6 @@
 import "./weather.scss";
 import { useEffect, useState } from "react";
-import { NetworkState } from "./types";
+import { NetworkState, NetworkSuccessState } from "./types";
 import cityPhoto from "../../services/imageAPI";
 import getCoordinates from "../../services/getCoordinates";
 import Error from "../Error/Error";
@@ -45,7 +45,8 @@ const Weather = () => {
     useEffect(() => {
         if (data.state === "success") {
             async function getImage(): Promise<void> {
-                const image = await cityPhoto(data.response.name);
+                const successData = data as NetworkSuccessState;
+                const image = await cityPhoto(successData.response.name);
                 if (image) setImage(image);
             }
             getImage();
