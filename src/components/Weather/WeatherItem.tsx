@@ -1,8 +1,8 @@
-import { WeatherData } from "./types";
+import { WeatherItemProps } from "./types"
 
-const WeatherItem = (props: { data: WeatherData; date: string, image: string }) => {
-    const data: WeatherData = props.data;
-    const temp = data.main.temp;
+const WeatherItem: React.FC<WeatherItemProps> = ({ data, date, image }) => {
+    const weather = data.response;
+    const temp = weather.main.temp;
 
     const overlayColor = () => {
         if (temp <= -15) return "violet";
@@ -18,23 +18,23 @@ const WeatherItem = (props: { data: WeatherData; date: string, image: string }) 
             <div className="b-weather_content">
                 <div className="b-weather_main-info">
                     <div className="b-weather_current-temp">{Math.round(temp)}°</div>
-                    <div className="b-weather_city">{data.name}</div>
+                    <div className="b-weather_city">{weather.name}</div>
                 </div>
                 <div className="b-weather_info">
-                    <div className="b-weather_date">{props.date}</div>
-                    <div className="b-weather_visual">{data.weather[0].description}</div>
+                    <div className="b-weather_date">{date}</div>
+                    <div className="b-weather_visual">{weather.weather[0].description}</div>
                     <div className="b-weather_max-min">
-                        <div className="b-weather_min">{Math.round(data.main.temp_min)}°</div>
+                        <div className="b-weather_min">{Math.round(weather.main.temp_min)}°</div>
                         <span className="b-weather_separator">/</span>
-                        <div className="b-weather_max">{Math.round(data.main.temp_max)}°</div>
+                        <div className="b-weather_max">{Math.round(weather.main.temp_max)}°</div>
                     </div>
                     <div className="b-weather_icon-wrap">
-                        <img src={`https://openweathermap.org/img/wn/${data.weather[0].icon}.png`} alt="" className="b-weather_icon" />
+                        <img src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}.png`} alt="" className="b-weather_icon" />
                     </div>
                 </div>
             </div>
             <div className="b-weather_back-wrap">
-                <img src={props.image} alt="city" className="b-weather_back" />
+                <img src={image} alt="city" className="b-weather_back" />
                 <div className={`b-weather_overlay ${overlayColor()}`}></div>
             </div>
         </div>

@@ -8,8 +8,26 @@ interface WeatherData {
         "temp": number,
         "temp_min": number,
         "temp_max": number
-    },
-    error?: string
+    }
 }
 
-export type {WeatherData};
+type NetworkFailedState = {
+    state: "failed";
+};
+type NetworkLoadingState = {
+    state: "loading";
+};
+type NetworkSuccessState = {
+    state: "success";
+    response: WeatherData
+};
+
+type NetworkState = NetworkSuccessState | NetworkLoadingState | NetworkFailedState;
+
+interface WeatherItemProps {
+    data: NetworkSuccessState,
+    date: string,
+    image: string
+}
+
+export type {NetworkState, WeatherData, WeatherItemProps};

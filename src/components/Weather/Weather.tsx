@@ -1,10 +1,10 @@
 import "./weather.scss";
 import { useEffect, useState } from "react";
-import { WeatherData } from "./types";
-import CityPhoto from "../../services/ImageAPI";
-import Coordinates from "../../services/Coordinates";
+import { NetworkState } from "./types";
+import cityPhoto from "../../services/imageAPI";
+import getCoordinates from "../../services/getCoordinates";
 import Error from "../Error/Error";
-import RequestAPI from "../../services/RequestAPI";
+import requestAPI from "../../services/requestAPI";
 import Loading from "../Loading/Loading";
 import WeatherItem from "./WeatherItem";
 import dayjs from "dayjs";
@@ -15,34 +15,49 @@ const Weather = () => {
     const [latitude, setLatitude] = useState<number | null>(null);
     const [longitude, setLongitude] = useState<number | null>(null);
 
-    const [data, setData] = useState<WeatherData | null | undefined>(null);
+    const [data, setData] = useState<NetworkState>({state: "loading"});
     const [date, setDate] = useState(new Date().toDateString());
 
-    const [image, setImage] = useState<string | null>(null);
+    const [image, setImage] = useState<string>("images/city-default.jpeg");
 
     useEffect(() => {
         setDate(dayjs(date).format("dddd, DD MMM"));
 
-        async function getData() {
-            await Coordinates(setLatitude, setLongitude);
+        async function getPosition(): Promise<void> {
+            const coordinates = await getCoordinates();
+            setLatitude(coordinates.latitude);
+            setLongitude(coordinates.longitude);
         }
-        getData();
+        getPosition();
     }, []);
 
     useEffect(() => {
-        if (latitude != null && longitude != null)
-            RequestAPI(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${APIkey}`, setData);
+        if (latitude != null && longitude != null) {
+            async function getData(): Promise<void> {
+                const data = await requestAPI(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${APIkey}`);
+                setData(data);
+            }
+            getData();
+        }
+            
     }, [latitude, longitude]);
     
     useEffect(() => {
-        if (data != null) CityPhoto(data.name, setImage);
+        if (data.state === "success") {
+            async function getImage(): Promise<void> {
+                const image = await cityPhoto(data.response.name);
+                if (image) setImage(image);
+            }
+            getImage();
+        }
+           
     }, [data]);
     
     return (
         <>
-            {data === null && <Loading />}
-            {data === undefined && <Error />}
-            {(data != null && image != null) && <WeatherItem data={data} date={date} image={image}/>}
+            {data.state === "loading" && <Loading />}
+            {data.state === "failed" && <Error />}
+            {data.state === "success" && <WeatherItem data={data} date={date} image={image}/>}
         </>
     );
 };

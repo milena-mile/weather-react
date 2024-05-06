@@ -1,17 +1,22 @@
-import { WeatherData } from "../components/Weather/types";
+import { NetworkState } from "../components/Weather/types";
 
-const RequestAPI = (link: string, setData: React.Dispatch<React.SetStateAction<WeatherData | null | undefined>>) => {
-    fetch(link)
-        .then(response => {
-            if (!response.ok) {
-                setData(undefined);
-                throw new Error(`HTTP error: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            setData(data);
-        })
+const requestAPI = async (link: string)  => {
+    const request = async () => {
+        return await fetch(link)
+            .then(async response => {
+                const res = await response.json();
+                const state: "success" | "failed" = response.ok ? "success" : "failed";
+                return {response: res, state: state};
+            })
+    }
+
+    try {
+        const data: NetworkState = await request();
+        return data;
+    } catch (error) {
+        throw new Error(`Error: ${error}`);
+    }
+    
 }
 
-export default RequestAPI;
+export default requestAPI;

@@ -2,21 +2,30 @@ import { createApi } from 'unsplash-js';
 
 const unsplash = createApi({ accessKey: 'mrPOb4v7LtLILDWijCFGh2ZfJJF17vdSM-pACjhmRTg' });
     
-const CityPhoto = (city: string, setImage: React.Dispatch<React.SetStateAction<string | null>>) => 
+const cityPhoto = async (city: string): Promise<string | undefined> => {
+    const getPhoto = async (): Promise<string | undefined> => {
+        return unsplash.search.getPhotos({ query: city }).then(result => {
 
-    unsplash.search.getPhotos({ query: city }).then(result => {
-        if (result.type === 'success') {
+            if (result.type === 'success') {
+                
+                if (result.response.total !== 0) {
+                    const random = Math.floor(Math.random() * result.response.results.length);
+                    const image = result.response.results[random].urls.regular;
+                    return image;
+                } else {
+                    return cityPhoto('village houses');
+                }
+            } 
 
-            if (result.response.results.length !== 0) {
-                const random = Math.floor(Math.random() * result.response.results.length);
-                setImage(result.response.results[random].urls.regular); 
-            } else {
-                CityPhoto('countryside', setImage);
-            }
-        } 
+        }) 
+    }
 
-    }).catch(error => {
-        console.error('Error fetching photo data:', error);
-    });
+    try {
+        const image = await getPhoto();
+        return image;
+    } catch (error) {
+        console.log("No image");
+    }
+}
 
-export default CityPhoto;
+export default cityPhoto;
