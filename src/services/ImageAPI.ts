@@ -15,7 +15,10 @@ const cityPhoto = async (city: string): Promise<string | undefined> => {
                 } else {
                     return cityPhoto('village houses');
                 }
-            } 
+            } else {
+                const image = "images/city-default.jpeg";
+                return image;
+            }
 
         }) 
     }

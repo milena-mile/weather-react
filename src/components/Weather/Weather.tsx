@@ -18,7 +18,7 @@ const Weather = () => {
     const [data, setData] = useState<NetworkState>({state: "loading"});
     const [date, setDate] = useState(new Date().toDateString());
 
-    const [image, setImage] = useState<string>("images/city-default.jpeg");
+    const [image, setImage] = useState<string>("");
 
     useEffect(() => {
         setDate(dayjs(date).format("dddd, DD MMM"));
