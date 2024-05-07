@@ -24,9 +24,12 @@ const Weather = () => {
         setDate(dayjs(date).format("dddd, DD MMM"));
 
         async function getPosition(): Promise<void> {
-            const coordinates = await getCoordinates();
-            setLatitude(coordinates.latitude);
-            setLongitude(coordinates.longitude);
+            getCoordinates()
+                .then(coordinates => {
+                    setLatitude(coordinates.latitude);
+                    setLongitude(coordinates.longitude);
+                })
+
         }
         getPosition();
     }, []);
@@ -34,8 +37,8 @@ const Weather = () => {
     useEffect(() => {
         if (latitude != null && longitude != null) {
             async function getData(): Promise<void> {
-                const data = await requestAPI(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${APIkey}`);
-                setData(data);
+                requestAPI(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${APIkey}`)
+                    .then(data => setData(data));
             }
             getData();
         }
@@ -46,8 +49,10 @@ const Weather = () => {
         if (data.state === "success") {
             async function getImage(): Promise<void> {
                 const successData = data as NetworkSuccessState;
-                const image = await cityPhoto(successData.response.name);
-                if (image) setImage(image);
+                cityPhoto(successData.response.name)
+                    .then(image => {
+                        if (image) setImage(image);
+            }       );
             }
             getImage();
         }
